@@ -1,0 +1,5 @@
+Guerreiro;Kain;Humano;2;150;150;50;30;OURO;170;INV;arma=arma:espada|armadura=armadura:ferro|mochila=pocao:mana,pocao:mana,pocao:mana,pocao:mana,pocao:mana,pocao:mana,pocao:mana,pocao:mana,pocao:mana,pocao:mana;HAB;golpe
+Mago;Dumbledore;Humano;1;100;0;0;25;0;30;OURO;100;INV;arma=-|armadura=-|mochila=-;HAB;fogo,regeneracao
+Monstro;Gorath;Orc;1;115;0;0;20;0.400000;OURO;100;INV;arma=-|armadura=-|mochila=-;HAB;postura
+Arqueiro;Legolas;Elfo;1;100;0;0;22;4;OURO;100;INV;arma=-|armadura=-|mochila=-;HAB;-
+Clerigo;Anduin;Humano;1;100;0;0;20;5;35;OURO;100;INV;arma=-|armadura=-|mochila=-;HAB;cura

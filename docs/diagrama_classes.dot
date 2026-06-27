@@ -1,0 +1,111 @@
+digraph CodeQuestKernel {
+    rankdir=BT;
+    fontname="Helvetica";
+    bgcolor="white";
+    splines=spline;
+    nodesep=0.45;
+    ranksep=0.85;
+
+    node [shape=record, fontname="Helvetica", fontsize=11, margin="0.12,0.10"];
+    edge [fontname="Helvetica", fontsize=9, color="#444444"];
+
+    /* ===================== ITENS ===================== */
+    Item [label="{«abstract»\nItem|- nome: string\l- peso: float\l|+ get_nome(): string\l+ get_peso(): float\l+ usar(): void\l}", style=filled, fillcolor="#FFF3CD"];
+    Arma [label="{Arma|- dano: int\l|+ get_dano(): int\l+ operator+(Arma): Arma\l+ usar(): void\l}", style=filled, fillcolor="#FFE8A3"];
+    Armadura [label="{Armadura|- defesa: int\l|+ get_defesa(): int\l+ usar(): void\l}", style=filled, fillcolor="#FFE8A3"];
+    Pocao [label="{Pocao|- efeito: string\l- valor: int\l|+ get_efeito(): string\l+ get_valor(): int\l+ usar(): void\l}", style=filled, fillcolor="#FFE8A3"];
+    ItemEspecial [label="{ItemEspecial|- efeito: string\l- valor: int\l|+ get_efeito(): string\l+ get_valor(): int\l+ usar(): void\l}", style=filled, fillcolor="#FFE8A3"];
+    ItensConcretos [label="{«produtos concretos»|Espada, Cajado, Adaga\lPeitorialFerro, MalhaEncantada, CouroFurtivo\lPocaoVida, PocaoMana, PocaoForca\lAnelFortuna, ReliquiaAntiga\l}", shape=note, style=filled, fillcolor="#FFF9E6"];
+
+    Arma -> Item [arrowhead=empty];
+    Armadura -> Item [arrowhead=empty];
+    Pocao -> Item [arrowhead=empty];
+    ItemEspecial -> Item [arrowhead=empty];
+    ItensConcretos -> Arma [style=dashed, arrowhead=empty, label="  (e Armadura/Pocao/ItemEspecial)"];
+
+    /* ===================== INVENTARIO ===================== */
+    Inventario [label="{Inventario|- mochila: vector~Item*~\l- arma_equipada: Arma*\l- armadura_equipada: Armadura*\l- capacidade_max: int\l- peso_max: float\l|+ adicionar_item(Item*): void\l+ remover_item(string): Item*\l+ equipar_arma(string): void\l+ desequipar_arma(): void\l+ bonus_ataque(): int\l+ bonus_defesa(): int\l+ usar_pocao(string, Jogador*): void\l+ usar_item_especial(string, Jogador*): void\l}", style=filled, fillcolor="#D6E9FF"];
+    Inventario -> Item [arrowhead=diamond, label="  1\n0..*", dir=back, style=solid];
+
+    /* ===================== HABILIDADE ===================== */
+    Habilidade [label="{«abstract»\nHabilidade|- nome: string\l- ativa: bool\l|+ get_nome(): string\l+ eh_ativa(): bool\l+ efeito(Jogador*, Jogador*): void\l}", style=filled, fillcolor="#E4D6FF"];
+    HabOfensiva [label="{«abstract»\nHabilidadeOfensiva|# dano_base: int\l}", style=filled, fillcolor="#EFE2FF"];
+    HabDefensiva [label="{«abstract»\nHabilidadeDefensiva|# valor_defesa: int\l}", style=filled, fillcolor="#EFE2FF"];
+    HabSuporte [label="{«abstract»\nHabilidadeSuporte|# valor_cura: int\l}", style=filled, fillcolor="#EFE2FF"];
+    HabConcretas [label="{«habilidades concretas»|GolpePoderoso, BolaDeFogo (Ofensivas)\lPosturaDefensiva (Defensiva)\lCuraMenor, Regeneracao (Suporte, passiva)\l}", shape=note, style=filled, fillcolor="#F5EEFF"];
+
+    HabOfensiva -> Habilidade [arrowhead=empty];
+    HabDefensiva -> Habilidade [arrowhead=empty];
+    HabSuporte -> Habilidade [arrowhead=empty];
+    HabConcretas -> HabOfensiva [style=dashed, arrowhead=empty, label="  (e Defensiva/Suporte)"];
+
+    /* ===================== OBSERVER ===================== */
+    Observador [label="{«abstract»\nObservadorDeEventos|+ notificar(string): void\l}", style=filled, fillcolor="#D9F2D6"];
+    NotifConsole [label="{NotificadorConsole|+ notificar(string): void\l}", style=filled, fillcolor="#E8F8E6"];
+    NotifConsole -> Observador [arrowhead=empty];
+
+    /* ===================== RACA ===================== */
+    Raca [label="{«abstract»\nRaca|+ get_nome(): string\l+ get_descricao(): string\l+ aplicar_bonus_base(int&): void\l}", style=filled, fillcolor="#D9EAD3"];
+    Humano [label="{Humano}", style=filled, fillcolor="#EAF7E8"];
+    Elfo [label="{Elfo}", style=filled, fillcolor="#EAF7E8"];
+    Anao [label="{Anao|+25 HP inicial}", style=filled, fillcolor="#EAF7E8"];
+    Orc [label="{Orc|+15 HP inicial}", style=filled, fillcolor="#EAF7E8"];
+    Humano -> Raca [arrowhead=empty];
+    Elfo -> Raca [arrowhead=empty];
+    Anao -> Raca [arrowhead=empty];
+    Orc -> Raca [arrowhead=empty];
+
+    /* ===================== JOGADOR ===================== */
+    Jogador [label="{«abstract»\nJogador|- nome: string\l- raca: Raca*\l- nivel, hp_max, hp_atual, xp: int\l- inventario: Inventario\l- habilidades: vector~Habilidade*~\l- observadores: vector~ObservadorDeEventos*~\l|+ atacar(): int\l+ receber_dano(int): void\l+ usar_habilidade(string, Jogador*): void\l+ serializar_habilidades(): string\l+ restaurar_habilidades(string): void\l+ operator\<\<(ostream&, Jogador&): ostream&\l+ operator==(Jogador&): bool\l+ operator\<(Jogador&): bool\l+ consumir_recurso(int): bool\l}", style=filled, fillcolor="#FFD6D6"];
+
+    Jogador -> Raca [arrowhead=diamond, label="  1"];
+    Jogador -> Inventario [arrowhead=diamond, label="  1"];
+    Jogador -> Habilidade [arrowhead=diamond, label="  0..*"];
+    Jogador -> Observador [arrowhead=odiamond, label="  0..* (notifica)", style=dashed];
+
+    /* ===================== SUBCLASSES DE JOGADOR ===================== */
+    Guerreiro [label="{Guerreiro|- forca: int\l|+ atacar(): int\l+ serializar(): string\l}", style=filled, fillcolor="#FFEAEA"];
+    Mago [label="{Mago|- inteligencia, mana, mana_max: int\l|+ atacar(): int\l+ consumir_recurso(int): bool\l}", style=filled, fillcolor="#FFEAEA"];
+    Monstro [label="{Monstro|- ferocidade: int\l- chance_critico: float\l|+ atacar(): int\l}", style=filled, fillcolor="#FFEAEA"];
+    Arqueiro [label="{Arqueiro|- destreza: int\l- flechas: int\l|+ atacar(): int\l}", style=filled, fillcolor="#FFEAEA"];
+    Clerigo [label="{Clerigo|- sabedoria: int\l- fe, fe_max: int\l|+ atacar(): int\l+ consumir_recurso(int): bool\l}", style=filled, fillcolor="#FFEAEA"];
+
+    Guerreiro -> Jogador [arrowhead=empty];
+    Mago -> Jogador [arrowhead=empty];
+    Monstro -> Jogador [arrowhead=empty];
+    Arqueiro -> Jogador [arrowhead=empty];
+    Clerigo -> Jogador [arrowhead=empty];
+
+    /* ===================== STRATEGY ===================== */
+    Estrategia [label="{«abstract»\nEstrategiaDeAlvo|+ escolher(Jogador*, vector~Jogador*~&): Jogador*\l}", style=filled, fillcolor="#FFE0CC"];
+    AlvoRR [label="{AlvoRoundRobin}", style=filled, fillcolor="#FFEBDD"];
+    AlvoFraco [label="{AlvoMaisFraco}", style=filled, fillcolor="#FFEBDD"];
+    AlvoForte [label="{AlvoMaisForte}", style=filled, fillcolor="#FFEBDD"];
+    AlvoRR -> Estrategia [arrowhead=empty];
+    AlvoFraco -> Estrategia [arrowhead=empty];
+    AlvoForte -> Estrategia [arrowhead=empty];
+
+    /* ===================== BATALHA ===================== */
+    Batalha [label="{Batalha|- participantes: vector~Jogador*~\l- log: list~string~\l- dano_causado: map~string,int~\l- estrategia: EstrategiaDeAlvo*\l|+ executar_turno(): void\l+ iniciar(int): void\l+ definir_estrategia(EstrategiaDeAlvo*): void\l}", style=filled, fillcolor="#D6F0FF"];
+    Batalha -> Jogador [arrowhead=vee, label="  orquestra 2..*"];
+    Batalha -> Estrategia [arrowhead=diamond, label="  1 (Strategy)"];
+
+    /* ===================== FACTORIES ===================== */
+    ItemFactory [label="{«factory»\nItemFactory|+ criar_arma(string): Arma*\l+ criar_armadura(string): Armadura*\l+ criar_pocao(string): Pocao*\l+ criar_item_especial(string): ItemEspecial*\l+ criar_item_por_codigo(string): Item*\l+ codigo_item(Item*): string\l+ preco_item_por_codigo(string): int\l}", shape=component, style=filled, fillcolor="#E6E6E6"];
+    JogadorFactory [label="{«factory»\nJogadorFactory|+ criar_guerreiro(...): Guerreiro*\l+ criar_mago(...): Mago*\l+ criar_monstro(...): Monstro*\l+ criar_arqueiro(...): Arqueiro*\l+ criar_clerigo(...): Clerigo*\l}", shape=component, style=filled, fillcolor="#E6E6E6"];
+    HabilidadeFactory [label="{«factory»\nHabilidadeFactory|+ criar_ofensiva(string): Habilidade*\l+ criar_defensiva(string): Habilidade*\l+ criar_suporte(string): Habilidade*\l+ criar_por_codigo(string): Habilidade*\l+ codigo_habilidade(Habilidade*): string\l}", shape=component, style=filled, fillcolor="#E6E6E6"];
+    RacaFactory [label="{«factory»\nRacaFactory|+ criar(string): Raca*\l}", shape=component, style=filled, fillcolor="#E6E6E6"];
+
+    ItemFactory -> Item [style=dashed, arrowhead=vee, label="  «creates»"];
+    JogadorFactory -> Jogador [style=dashed, arrowhead=vee, label="  «creates»"];
+    HabilidadeFactory -> Habilidade [style=dashed, arrowhead=vee, label="  «creates»"];
+    RacaFactory -> Raca [style=dashed, arrowhead=vee, label="  «creates»"];
+
+    /* ===================== PERSISTENCIA ===================== */
+    Persistencia [label="{«facade»\nPersistencia|+ salvar(vector~Jogador*~&, string): void\l+ carregar(string): vector~Jogador*~\l+ restaura inventario/habilidades/ouro\l}", shape=component, style=filled, fillcolor="#E6E6E6"];
+    Persistencia -> Jogador [style=dashed, arrowhead=vee, label="  «serializa/reconstroi»"];
+
+    label="CodeQuest: A Lenda do Kernel — Diagrama de Classes\n(setas vazias = heranca | losango = composicao | tracejado = dependencia)";
+    labelloc="t";
+    fontsize=16;
+}
